@@ -40,24 +40,26 @@ export default function DashboardPage() {
   const [industry, setIndustry] = useState("Artificial Intelligence");
 
   // Centralized data fetching function for all posts
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
   const fetchAllPosts = useCallback(async () => {
-    if (!userId) return;
+    if (!userId || !API_BASE_URL) return;
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/users/${userId}/posts`);
+      const response = await fetch(`${API_BASE_URL}/users/${userId}/posts`);
       if (!response.ok) throw new Error("Failed to fetch posts.");
       setPosts(await response.json());
     } catch (err) {
       console.error("Error fetching posts:", err);
     }
-  }, [userId]);
+  }, [userId, API_BASE_URL]);
 
   // Effect to fetch initial data (user profile and posts)
   useEffect(() => {
     const fetchInitialData = async () => {
-      if (userId) {
+      if (userId && API_BASE_URL) {
         setLoading(true);
         try {
-          const userResponse = await fetch(`http://localhost:8000/api/v1/users/${userId}`);
+          const userResponse = await fetch(`${API_BASE_URL}/users/${userId}`);
           if (!userResponse.ok) throw new Error("Failed to fetch user data.");
           setUser(await userResponse.json());
           await fetchAllPosts();
@@ -67,21 +69,22 @@ export default function DashboardPage() {
           setLoading(false);
         }
       } else {
-        setError("User ID not found in URL.");
+        setError("User ID or API Base URL not found.");
         setLoading(false);
       }
     };
     fetchInitialData();
-  }, [userId, fetchAllPosts]);
+  }, [userId, fetchAllPosts, API_BASE_URL]);
 
   // Function to handle AI post generation with industry research
   const handleGeneratePost = async () => {
     if (!userId) return alert("User ID is missing.");
     if (!industry.trim()) return alert("Please enter an industry.");
+    if (!API_BASE_URL) return alert("API Base URL is not configured.");
 
     setIsGenerating(true);
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/users/${userId}/generate_post`, {
+      const response = await fetch(`${API_BASE_URL}/users/${userId}/generate_post`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ industry }), // Pass the industry in the request
@@ -101,8 +104,10 @@ export default function DashboardPage() {
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(12, 0, 0, 0); // Set to noon to avoid timezone issues
 
+    if (!API_BASE_URL) return alert("API Base URL is not configured.");
+
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/posts/${postId}`, {
+      const response = await fetch(`${API_BASE_URL}/posts/${postId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
