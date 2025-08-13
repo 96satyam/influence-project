@@ -10,7 +10,6 @@ const nextConfig = {
       },
     ],
   },
-  output: 'standalone', // For Next.js SSR deployment
 };
 
 module.exports = nextConfig;
