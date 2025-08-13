@@ -2,7 +2,7 @@
 
 export default function LoginPage() {
   // The backend URL is the full address of our FastAPI server's login endpoint
-  const backendLoginUrl = "http://localhost:8000/api/v1/auth/linkedin/login";
+  const backendLoginUrl = `${process.env.NEXT_PUBLIC_API_URL}/auth/linkedin/login`;
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gray-50">

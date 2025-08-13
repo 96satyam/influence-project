@@ -3,8 +3,10 @@
 import { useSearchParams } from "next/navigation";
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import ContentCalendar from "@/components/ContentCalendar";
-import AnalyticsModal from "@/components/AnalyticsModal"; // Ensure AnalyticsModal is imported
+import dynamic from 'next/dynamic';
+
+const ClientCalendarWrapper = dynamic(() => import("@/components/ClientCalendar"), { ssr: false });
+const AnalyticsModal = dynamic(() => import("@/components/AnalyticsModal"), { ssr: false });
 import { formatISO } from 'date-fns';
 
 // Define the structure of a Post object
@@ -26,8 +28,9 @@ type User = {
 };
 
 export default function DashboardPage() {
-  const searchParams = useSearchParams();
-  const userId = searchParams.get("user_id");
+  // Initialize userId state to null, and update it in useEffect
+  const [clientUserId, setClientUserId] = useState<string | null>(null);
+  const searchParams = useSearchParams(); // Move useSearchParams here
 
   // States for user data and UI
   const [user, setUser] = useState<User | null>(null);
@@ -42,55 +45,64 @@ export default function DashboardPage() {
   // Centralized data fetching function for all posts
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-  const fetchAllPosts = useCallback(async () => {
-    if (!userId || !API_BASE_URL) return;
+  const fetchAllPosts = useCallback(async (currentUserId: string) => { // Accept userId as argument
+    if (!currentUserId || !API_BASE_URL) return;
     try {
-      const response = await fetch(`${API_BASE_URL}/users/${userId}/posts`);
+      const response = await fetch(`${API_BASE_URL}/users/${currentUserId}/posts`);
       if (!response.ok) throw new Error("Failed to fetch posts.");
       setPosts(await response.json());
     } catch (err) {
       console.error("Error fetching posts:", err);
     }
-  }, [userId, API_BASE_URL]);
+  }, [API_BASE_URL]);
+
+  // Effect to get userId from searchParams only on client-side
+  useEffect(() => {
+    const id = searchParams.get("user_id");
+    setClientUserId(id);
+  }, [searchParams]);
 
   // Effect to fetch initial data (user profile and posts)
   useEffect(() => {
     const fetchInitialData = async () => {
-      if (userId && API_BASE_URL) {
+      if (clientUserId && API_BASE_URL) { // Use clientUserId here
         setLoading(true);
         try {
-          const userResponse = await fetch(`${API_BASE_URL}/users/${userId}`);
+          const userResponse = await fetch(`${API_BASE_URL}/users/${clientUserId}`);
           if (!userResponse.ok) throw new Error("Failed to fetch user data.");
           setUser(await userResponse.json());
-          await fetchAllPosts();
+          await fetchAllPosts(clientUserId); // Pass clientUserId
         } catch (err: any) {
           setError(err.message);
         } finally {
           setLoading(false);
         }
-      } else {
-        setError("User ID or API Base URL not found.");
+      } else if (clientUserId === null) { // Only set error if clientUserId is explicitly null after initial check
+        setError("User ID not found in URL.");
         setLoading(false);
       }
     };
-    fetchInitialData();
-  }, [userId, fetchAllPosts, API_BASE_URL]);
+    // Only run this effect if clientUserId has been determined
+    if (clientUserId !== undefined) { // clientUserId starts as null, then becomes string or null
+      fetchInitialData();
+    }
+  }, [clientUserId, fetchAllPosts, API_BASE_URL]);
 
   // Function to handle AI post generation with industry research
   const handleGeneratePost = async () => {
-    if (!userId) return alert("User ID is missing.");
+    if (!clientUserId) return alert("User ID is missing."); // Use clientUserId
     if (!industry.trim()) return alert("Please enter an industry.");
     if (!API_BASE_URL) return alert("API Base URL is not configured.");
 
     setIsGenerating(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/users/${userId}/generate_post`, {
+      const response = await fetch(`${API_BASE_URL}/users/${clientUserId}/generate_post`, { // Use clientUserId
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ industry }), // Pass the industry in the request
       });
       if (!response.ok) throw new Error("Failed to generate post.");
-      await fetchAllPosts(); // Re-fetch to show the new draft
+      await fetchAllPosts(clientUserId); // Pass clientUserId
     } catch (err: any) {
       alert(`Error: ${err.message}`);
     } finally {
@@ -116,7 +128,7 @@ export default function DashboardPage() {
         }),
       });
       if (!response.ok) throw new Error("Failed to schedule post.");
-      await fetchAllPosts();
+      await fetchAllPosts(clientUserId!); // Pass clientUserId, assert non-null
     } catch (err: any) {
       alert(`Error scheduling post: ${err.message}`);
     }
@@ -210,8 +222,8 @@ export default function DashboardPage() {
           <div className="bg-gray-800 rounded-xl shadow-lg p-7 h-full flex flex-col">
             <h2 className="text-3xl font-bold text-white mb-5">Content Calendar</h2>
             <div className="flex-grow">
-              {userId ? (
-                <ContentCalendar posts={scheduledPosts} />
+              {clientUserId ? (
+                <ClientCalendarWrapper posts={scheduledPosts} />
               ) : (
                 <p className="text-gray-400 text-center py-5 text-lg">Login to view your calendar.</p>
               )}
