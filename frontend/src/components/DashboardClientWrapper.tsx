@@ -1,26 +1,21 @@
 "use client";
 
 import React from "react";
-import DashboardPage from "@/app/dashboard/page"; // Import the original DashboardPage
+import { useSearchParams } from "next/navigation";
 
-interface Post {
-  id: number;
-  content: string;
-  status: string;
-  scheduled_at: string | null;
-  mock_likes?: number;
-  mock_comments?: number;
-  mock_shares?: number;
-}
-
-type User = {
-  id: string;
-  first_name: string;
-  last_name: string;
-  profile_picture_url?: string;
-};
-
-// This component will simply render the DashboardPage, ensuring it's client-side
 export default function DashboardClientWrapper() {
-  return <DashboardPage />;
+  const searchParams = useSearchParams();
+  const userId = searchParams.get("user_id");
+
+  return (
+    <div className="min-h-screen bg-gray-900 text-gray-100">
+      <header className="bg-gray-800 shadow-lg py-5 px-8">
+        <h1 className="text-2xl font-bold text-white">Dashboard (Minimal)</h1>
+      </header>
+      <main className="p-8">
+        <p className="text-gray-300">User ID: {userId || "N/A"}</p>
+        <p className="text-gray-300">This is a very minimal dashboard to test memory issues.</p>
+      </main>
+    </div>
+  );
 }

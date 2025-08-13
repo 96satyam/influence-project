@@ -10,6 +10,7 @@ const nextConfig = {
       },
     ],
   },
+  output: 'standalone', // Re-adding standalone output for Render deployment
 };
 
 module.exports = nextConfig;
