@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+httpx==0.25.0
+sqlmodel
+openai
+tavily-python
+gunicorn
+psycopg2-binary
