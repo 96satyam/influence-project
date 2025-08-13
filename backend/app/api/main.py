@@ -25,8 +25,6 @@ from backend.app.domain.entities import UserProfile
 from backend.app.adapters.llm_service import PerplexityAdapter
 
 
-load_dotenv()
-
 # This is a new function that will run once when the app starts
 def on_startup():
     print("Application is starting up...")
