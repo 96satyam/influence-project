@@ -42,7 +42,7 @@ app = FastAPI(
 # This allows our frontend (running on localhost:3000) to make requests to our backend.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://influence-ten.vercel.app"],
+    allow_origins=os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:3001,https://influence-ten.vercel.app").split(","),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -55,7 +55,7 @@ class PostUpdate(BaseModel):
 # --- LinkedIn OAuth Configuration ---
 LINKEDIN_CLIENT_ID = os.getenv("LINKEDIN_CLIENT_ID")
 LINKEDIN_CLIENT_SECRET = os.getenv("LINKEDIN_CLIENT_SECRET")
-LINKEDIN_REDIRECT_URI = "http://127.0.0.1:8000/api/v1/auth/linkedin/callback"
+LINKEDIN_REDIRECT_URI = os.getenv("LINKEDIN_REDIRECT_URI", "http://localhost:8000/api/v1/auth/linkedin/callback")
 LINKEDIN_SCOPE = "profile openid email"
 
 linkedin_adapter = LinkedInAPIAdapter()
@@ -66,6 +66,24 @@ perplexity_adapter = PerplexityAdapter()
 @app.get("/health", status_code=200, tags=["Status"])
 def health_check():
     return {"status": "ok"}
+
+@app.post("/api/v1/create_test_user", response_model=User, tags=["Development"])
+def create_test_user():
+    """
+    Creates a test user for development purposes.
+    """
+    with Session(engine) as session:
+        test_user = User(
+            id="test_user",
+            first_name="Test",
+            last_name="User",
+            profile_picture_url="https://via.placeholder.com/150",
+            access_token="mock_token"
+        )
+        session.add(test_user)
+        session.commit()
+        session.refresh(test_user)
+        return test_user
 
 @app.get("/api/v1/auth/linkedin/login", tags=["Authentication"])
 def linkedin_login():
@@ -124,7 +142,7 @@ async def linkedin_callback(request: Request):
     
     # --- THIS IS THE UPDATED PART ---
     # Define the destination URL for our frontend dashboard
-    frontend_dashboard_url = "http://localhost:3000/dashboard"
+    frontend_dashboard_url = os.getenv("FRONTEND_DASHBOARD_URL", "http://localhost:3000/dashboard")
     
     # Instead of returning JSON, redirect the user back to the frontend,
     # passing the user_id as a query parameter.
@@ -183,25 +201,6 @@ def update_post(post_id: int, post_update: PostUpdate):
         for key, value in update_data.items():
             setattr(post, key, value)
         
-        session.add(post)
-        session.commit()
-        session.refresh(post)
-        return post
-    
-@app.patch("/api/v1/posts/{post_id}", response_model=Post, tags=["Content"])
-def update_post(post_id: int, post_update: PostUpdate):
-    """
-    Updates a post's status or scheduled time.
-    """
-    with Session(engine) as session:
-        post = session.get(Post, post_id)
-        if not post:
-            return JSONResponse(status_code=404, content={"message": "Post not found"})
-
-        update_data = post_update.model_dump(exclude_unset=True)
-        for key, value in update_data.items():
-            setattr(post, key, value)
-
         session.add(post)
         session.commit()
         session.refresh(post)

@@ -1,63 +1,65 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
-import { format, parse, startOfWeek, getDay } from 'date-fns';
-import { enUS } from 'date-fns/locale/en-US';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
+import React, { useState } from "react";
+import { Calendar, dateFnsLocalizer } from "react-big-calendar";
+import { format, parse, startOfWeek, getDay } from "date-fns";
+import { enUS } from "date-fns/locale/en-US";
+import "react-big-calendar/lib/css/react-big-calendar.css";
 import './calendar-custom.css'; // Custom CSS for styling
+import AnalyticsModal from "./AnalyticsModal";
 
-const locales = {
-  'en-US': enUS,
-};
+interface Post {
+    id: number;
+    content: string;
+    status: string;
+    scheduled_at: string | null;
+    mock_likes?: number;
+    mock_comments?: number;
+    mock_shares?: number;
+}
 
-const localizer = dateFnsLocalizer({
-  format,
-  parse,
-  startOfWeek,
-  getDay,
-  locales,
-});
+const locales = { "en-US": enUS };
+const localizer = dateFnsLocalizer({ format, parse, startOfWeek, getDay, locales });
 
-const events = [
-  {
-    title: 'Scheduled Post 1',
-    start: new Date(2025, 7, 15, 10, 0), // August 15, 2025, 10:00 AM
-    end: new Date(2025, 7, 15, 11, 0),   // August 15, 2025, 11:00 AM
-  },
-  {
-    title: 'Campaign Launch',
-    start: new Date(2025, 7, 20, 14, 0), // August 20, 2025, 2:00 PM
-    end: new Date(2025, 7, 20, 15, 0),   // August 20, 2025, 3:00 PM
-  },
-];
+export default function ContentCalendar({ posts }: { posts: Post[] }) {
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
-export default function ContentCalendar() {
-  const [myEvents, setMyEvents] = useState(events);
+  const events = posts
+    .filter(post => post.status === 'scheduled' && post.scheduled_at)
+    .map(post => ({
+      title: post.content.substring(0, 30) + "...",
+      start: new Date(post.scheduled_at!),
+      end: new Date(post.scheduled_at!),
+      allDay: true,
+      resource: post,
+    }));
 
-  const handleSelectEvent = (event: any) => {
-    alert(`Selected event: ${event.title}`);
-  };
-
-  const handleSelectSlot = ({ start, end }: { start: Date; end: Date }) => {
-    const title = window.prompt('New Event name');
-    if (title) {
-      setMyEvents([...myEvents, { start, end, title }]);
-    }
-  };
+  console.log("Calendar events:", events); // Debugging: Check events array
 
   return (
-    <div className="h-[600px]">
-      <Calendar
-        localizer={localizer}
-        events={myEvents}
-        startAccessor="start"
-        endAccessor="end"
-        style={{ height: '100%' }}
-        onSelectEvent={handleSelectEvent}
-        onSelectSlot={handleSelectSlot}
-        selectable
+    <>
+      <div className="h-[500px] rounded-lg bg-gray-700 p-4 border border-gray-600 shadow-inner text-gray-100">
+        <Calendar
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          onSelectEvent={(event) => {
+            console.log("Selected post:", event.resource); // Debugging: Check selected post
+            setSelectedPost(event.resource);
+          }}
+          defaultView="month"
+          views={['month', 'week', 'day', 'agenda']}
+          step={60}
+          showMultiDayTimes
+        />
+      </div>
+      
+      <AnalyticsModal
+        post={selectedPost}
+        isOpen={!!selectedPost}
+        onOpenChange={(isOpen) => { if (!isOpen) { setSelectedPost(null); }}}
       />
-    </div>
+    </>
   );
 }

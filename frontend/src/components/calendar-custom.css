@@ -2,63 +2,115 @@
 
 .rbc-calendar {
   font-family: 'Inter', sans-serif;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  background-color: #2d3748; /* Dark background for calendar */
+  color: #e2e8f0; /* Light text color */
 }
 
 .rbc-header {
-  background-color: #f0f4f8;
-  padding: 10px 0;
-  border-bottom: 1px solid #e2e8f0;
-  font-weight: 600;
-  color: #2d3748;
+  background-color: #2d3748; /* Darker header background */
+  padding: 12px 0;
+  border-bottom: 1px solid #4a5568; /* Darker border */
+  font-weight: 700;
+  color: #e2e8f0; /* Light text color */
+  font-size: 1.1rem;
 }
 
 .rbc-off-range-bg {
-  background-color: #f8fafc;
+  background-color: #2d3748; /* Darker background for off-range days */
 }
 
 .rbc-date-cell {
-  padding: 8px;
+  padding: 10px;
+  color: #e2e8f0; /* Light text color for dates */
+}
+
+.rbc-date-cell.rbc-now {
+  color: #90cdf4; /* Highlight current date */
+}
+
+.rbc-row-segment .rbc-event-content {
+  color: white; /* Ensure event text is white */
 }
 
 .rbc-event {
-  background-color: #4299e1;
+  background-color: #4299e1; /* Blue for events */
   color: white;
-  border-radius: 4px;
-  padding: 2px 6px;
-  font-size: 0.875rem;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 0.9rem;
+  opacity: 0.9;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.rbc-event:hover {
+  background-color: #3182ce; /* Darker blue on hover */
+  opacity: 1;
 }
 
 .rbc-event-alt {
-  background-color: #667eea;
+  background-color: #667eea; /* Alternative event color */
 }
 
 .rbc-toolbar button {
-  background-color: #edf2f7;
-  color: #2d3748;
-  border: 1px solid #cbd5e0;
-  border-radius: 4px;
-  padding: 6px 12px;
-  margin: 0 4px;
+  background-color: #4a5568; /* Darker button background */
+  color: #e2e8f0; /* Light text color */
+  border: 1px solid #6b7280; /* Darker border */
+  border-radius: 6px;
+  padding: 8px 14px;
+  margin: 0 5px;
   transition: all 0.2s ease-in-out;
+  font-weight: 600;
 }
 
 .rbc-toolbar button:hover {
-  background-color: #e2e8f0;
-  border-color: #a0aec0;
+  background-color: #6b7280; /* Lighter background on hover */
+  border-color: #90cdf4; /* Blue border on hover */
+  color: white;
 }
 
 .rbc-toolbar button.rbc-active {
-  background-color: #4299e1;
+  background-color: #4299e1; /* Blue for active button */
   color: white;
   border-color: #4299e1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .rbc-today {
-  background-color: #ebf8ff;
+  background-color: #2c5282; /* Darker blue for today's background */
+  border-radius: 8px;
 }
 
 .rbc-current-time-indicator {
-  background-color: #e53e3e;
+  background-color: #fc8181; /* Red for current time indicator */
+}
+
+/* Adjustments for specific calendar views */
+.rbc-month-view, .rbc-time-view, .rbc-agenda-view {
+  background-color: #2d3748; /* Ensure views have dark background */
+}
+
+.rbc-day-bg {
+  background-color: #2d3748; /* Dark background for day cells */
+}
+
+.rbc-row-content {
+  color: #e2e8f0; /* Ensure text in row content is light */
+}
+
+.rbc-time-header-content {
+  color: #e2e8f0; /* Light text for time header */
+}
+
+.rbc-time-content {
+  color: #e2e8f0; /* Light text for time content */
+}
+
+.rbc-agenda-table {
+  color: #e2e8f0; /* Light text for agenda table */
+}
+
+.rbc-agenda-time-cell {
+  color: #e2e8f0; /* Light text for agenda time cells */
 }

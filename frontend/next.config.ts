@@ -1,6 +1,5 @@
-import type { NextConfig } from 'next'
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   images: {
     remotePatterns: [
       {
@@ -11,6 +10,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-}
+  output: 'standalone', // For Next.js SSR deployment
+};
 
-export default nextConfig
+module.exports = nextConfig;
