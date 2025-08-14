@@ -1,116 +1,148 @@
 /* Custom styles for react-big-calendar */
 
+/* Overall calendar container */
 .rbc-calendar {
   font-family: 'Inter', sans-serif;
-  border-radius: 12px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-  background-color: #2d3748; /* Dark background for calendar */
-  color: #e2e8f0; /* Light text color */
+  border-radius: 0.5rem;
+  background-color: #1f2937; /* gray-800 */
+  color: #f9fafb; /* gray-100 */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-.rbc-header {
-  background-color: #2d3748; /* Darker header background */
-  padding: 12px 0;
-  border-bottom: 1px solid #4a5568; /* Darker border */
+/* Toolbar (navigation, view buttons) */
+.rbc-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #374151; /* gray-700 */
+  margin-bottom: 1rem;
+}
+
+.rbc-toolbar button {
+  background-color: #374151; /* gray-700 */
+  color: #f9fafb; /* gray-100 */
+  border: 1px solid #4b5563; /* gray-600 */
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.rbc-toolbar button:hover {
+  background-color: #4b5563; /* gray-600 */
+  color: #ffffff;
+}
+
+.rbc-toolbar button.rbc-active {
+  background-color: #2563eb; /* blue-600 */
+  border-color: #2563eb;
+  color: #ffffff;
+}
+
+.rbc-toolbar button.rbc-active:hover {
+  background-color: #1d4ed8; /* blue-700 */
+  border-color: #1d4ed8;
+}
+
+.rbc-toolbar-label {
+  font-size: 1.5rem;
   font-weight: 700;
-  color: #e2e8f0; /* Light text color */
-  font-size: 1.1rem;
+  color: #f9fafb; /* gray-100 */
+}
+
+/* Header of the calendar (days of the week) */
+.rbc-header {
+  background-color: #374151; /* gray-700 */
+  color: #d1d5db; /* gray-300 */
+  padding: 0.75rem 0;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-bottom: 1px solid #4b5563; /* gray-600 */
+}
+
+.rbc-header + .rbc-header {
+  border-left: 1px solid #4b5563; /* gray-600 */
+}
+
+/* Cells in the calendar grid */
+.rbc-day-bg {
+  background-color: #1f2937; /* gray-800 */
+  border: 1px solid #374151; /* gray-700 */
 }
 
 .rbc-off-range-bg {
-  background-color: #2d3748; /* Darker background for off-range days */
+  background-color: #111827; /* gray-900 */
 }
 
-.rbc-date-cell {
-  padding: 10px;
-  color: #e2e8f0; /* Light text color for dates */
+.rbc-today {
+  background-color: #374151; /* gray-700 */
 }
 
-.rbc-date-cell.rbc-now {
-  color: #90cdf4; /* Highlight current date */
-}
-
-.rbc-row-segment .rbc-event-content {
-  color: white; /* Ensure event text is white */
-}
-
+/* Events */
 .rbc-event {
-  background-color: #4299e1; /* Blue for events */
-  color: white;
-  border-radius: 6px;
-  padding: 3px 8px;
-  font-size: 0.9rem;
-  opacity: 0.9;
+  background-color: #2563eb; /* blue-600 */
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  color: #ffffff;
+  font-size: 0.875rem;
+  border: none;
+  cursor: pointer;
   transition: background-color 0.2s ease-in-out;
 }
 
 .rbc-event:hover {
-  background-color: #3182ce; /* Darker blue on hover */
-  opacity: 1;
+  background-color: #1d4ed8; /* blue-700 */
 }
 
-.rbc-event-alt {
-  background-color: #667eea; /* Alternative event color */
+.rbc-event-content {
+  white-space: normal;
 }
 
-.rbc-toolbar button {
-  background-color: #4a5568; /* Darker button background */
-  color: #e2e8f0; /* Light text color */
-  border: 1px solid #6b7280; /* Darker border */
-  border-radius: 6px;
-  padding: 8px 14px;
-  margin: 0 5px;
-  transition: all 0.2s ease-in-out;
-  font-weight: 600;
-}
-
-.rbc-toolbar button:hover {
-  background-color: #6b7280; /* Lighter background on hover */
-  border-color: #90cdf4; /* Blue border on hover */
-  color: white;
-}
-
-.rbc-toolbar button.rbc-active {
-  background-color: #4299e1; /* Blue for active button */
-  color: white;
-  border-color: #4299e1;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.rbc-today {
-  background-color: #2c5282; /* Darker blue for today's background */
-  border-radius: 8px;
-}
-
+/* Current time indicator */
 .rbc-current-time-indicator {
-  background-color: #fc8181; /* Red for current time indicator */
+  background-color: #ef4444; /* red-500 */
 }
 
-/* Adjustments for specific calendar views */
-.rbc-month-view, .rbc-time-view, .rbc-agenda-view {
-  background-color: #2d3748; /* Ensure views have dark background */
-}
-
-.rbc-day-bg {
-  background-color: #2d3748; /* Dark background for day cells */
-}
-
-.rbc-row-content {
-  color: #e2e8f0; /* Ensure text in row content is light */
-}
-
-.rbc-time-header-content {
-  color: #e2e8f0; /* Light text for time header */
-}
-
-.rbc-time-content {
-  color: #e2e8f0; /* Light text for time content */
-}
-
+/* Agenda view */
 .rbc-agenda-table {
-  color: #e2e8f0; /* Light text for agenda table */
+  background-color: #1f2937; /* gray-800 */
+  color: #f9fafb; /* gray-100 */
+  border: 1px solid #374151; /* gray-700 */
 }
 
 .rbc-agenda-time-cell {
-  color: #e2e8f0; /* Light text for agenda time cells */
+  color: #d1d5db; /* gray-300 */
+}
+
+.rbc-agenda-date-cell {
+  color: #f9fafb; /* gray-100 */
+}
+
+.rbc-agenda-event-cell {
+  color: #f9fafb; /* gray-100 */
+}
+
+/* Selected slot/day */
+.rbc-day-slot .rbc-selected-cell {
+  background-color: #4b5563; /* gray-600 */
+}
+
+/* Event popups (if any) */
+.rbc-overlay {
+  background-color: #1f2937; /* gray-800 */
+  border: 1px solid #4b5563; /* gray-600 */
+  color: #f9fafb; /* gray-100 */
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.rbc-overlay-header {
+  border-bottom: 1px solid #374151; /* gray-700 */
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.rbc-overlay-header .rbc-btn-group button {
+  background-color: #2563eb; /* blue-600 */
+  color: #ffffff;
 }
