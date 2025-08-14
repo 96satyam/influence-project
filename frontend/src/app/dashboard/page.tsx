@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
@@ -25,22 +26,18 @@ type User = {
   profile_picture_url?: string;
 };
 
-export default function DashboardPage() {
+function DashboardContent() {
   const searchParams = useSearchParams();
   const userId = searchParams.get("user_id");
 
-  // States for user data and UI
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
-  
-  // State for the industry input
   const [industry, setIndustry] = useState("Artificial Intelligence");
 
-  // Centralized data fetching function for all posts
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL; // Use environment variable
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
   const fetchAllPosts = useCallback(async () => {
     if (!userId || !API_BASE_URL) return;
@@ -53,7 +50,6 @@ export default function DashboardPage() {
     }
   }, [userId, API_BASE_URL]);
 
-  // Effect to fetch initial data (user profile and posts)
   useEffect(() => {
     const fetchInitialData = async () => {
       if (userId && API_BASE_URL) {
@@ -76,7 +72,6 @@ export default function DashboardPage() {
     fetchInitialData();
   }, [userId, fetchAllPosts, API_BASE_URL]);
 
-  // Function to handle AI post generation with industry research
   const handleGeneratePost = async () => {
     if (!userId) return alert("User ID is missing.");
     if (!industry.trim()) return alert("Please enter an industry.");
@@ -87,10 +82,10 @@ export default function DashboardPage() {
       const response = await fetch(`${API_BASE_URL}/users/${userId}/generate_post`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ industry }), // Pass the industry in the request
+        body: JSON.stringify({ industry }),
       });
       if (!response.ok) throw new Error("Failed to generate post.");
-      await fetchAllPosts(); // Re-fetch to show the new draft
+      await fetchAllPosts();
     } catch (err: any) {
       alert(`Error: ${err.message}`);
     } finally {
@@ -98,11 +93,10 @@ export default function DashboardPage() {
     }
   };
 
-  // Function to schedule a post (with timezone fix)
   const handleSchedulePost = async (postId: number) => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(12, 0, 0, 0); // Set to noon to avoid timezone issues
+    tomorrow.setHours(12, 0, 0, 0);
 
     try {
       const response = await fetch(`${API_BASE_URL}/posts/${postId}`, {
@@ -120,16 +114,14 @@ export default function DashboardPage() {
     }
   };
 
-  // Filter posts for display
   const draftPosts = posts.filter(p => p.status === 'draft');
   const scheduledPosts = posts.filter(p => p.status === 'scheduled');
-  
+
   if (loading) return <main className="flex min-h-screen items-center justify-center bg-gray-100"><p className="text-gray-700">Loading dashboard...</p></main>;
   if (error) return <main className="flex min-h-screen items-center justify-center bg-gray-100"><p className="text-red-500">Error: {error}</p></main>;
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100">
-      {/* Header */}
       <header className="bg-gray-800 shadow-lg py-5 px-8 flex items-center justify-between">
         <div className="flex items-center space-x-5">
           {user?.profile_picture_url && (
@@ -146,13 +138,10 @@ export default function DashboardPage() {
             <p className="text-md text-gray-300">Your personal AI for LinkedIn branding.</p>
           </div>
         </div>
-        {/* Placeholder for other header elements like notifications or settings */}
       </header>
 
       <main className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column: AI Content Generation & Drafts */}
         <section className="lg:col-span-2 space-y-8">
-          {/* AI Content Generation Card */}
           <div className="bg-gray-800 rounded-xl shadow-lg p-7">
             <h2 className="text-3xl font-bold text-white mb-5">AI Content Generation</h2>
             <p className="text-gray-300 mb-5">
@@ -180,7 +169,6 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          {/* Drafts List Card */}
           <div className="bg-gray-800 rounded-xl shadow-lg p-7">
             <h2 className="text-3xl font-bold text-white mb-5">Drafts</h2>
             <div className="space-y-5">
@@ -203,7 +191,6 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* Right Column: Content Calendar */}
         <section className="lg:col-span-1">
           <div className="bg-gray-800 rounded-xl shadow-lg p-7 h-full flex flex-col">
             <h2 className="text-3xl font-bold text-white mb-5">Content Calendar</h2>
@@ -218,5 +205,13 @@ export default function DashboardPage() {
         </section>
       </main>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<main className="flex min-h-screen items-center justify-center bg-gray-100"><p className="text-gray-700">Loading dashboard...</p></main>}>
+      <DashboardContent />
+    </Suspense>
   );
 }
