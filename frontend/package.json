@@ -5,11 +5,8 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "node .next/standalone/server.js",
+    "start": "next start",
     "lint": "next lint"
-  },
-  "engines": {
-    "node": "20.x"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.14",

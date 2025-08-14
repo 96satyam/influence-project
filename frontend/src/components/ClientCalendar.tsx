@@ -1,12 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { enUS } from "date-fns/locale/en-US";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import './calendar-custom.css'; // Custom CSS for styling
-// import AnalyticsModal from "./AnalyticsModal"; // Removed AnalyticsModal import
+import AnalyticsModal from "./AnalyticsModal";
 
 interface Post {
     id: number;
@@ -22,7 +22,7 @@ const locales = { "en-US": enUS };
 const localizer = dateFnsLocalizer({ format, parse, startOfWeek, getDay, locales });
 
 export default function ContentCalendar({ posts }: { posts: Post[] }) {
-  // const [selectedPost, setSelectedPost] = useState<Post | null>(null); // Removed state for selected post
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
   const events = posts
     .filter(post => post.status === 'scheduled' && post.scheduled_at)
@@ -44,10 +44,10 @@ export default function ContentCalendar({ posts }: { posts: Post[] }) {
           events={events}
           startAccessor="start"
           endAccessor="end"
-          // onSelectEvent={(event) => { // Removed onSelectEvent handler
-          //   console.log("Selected post:", event.resource);
-          //   setSelectedPost(event.resource);
-          // }}
+          onSelectEvent={(event) => {
+            console.log("Selected post:", event.resource); // Debugging: Check selected post
+            setSelectedPost(event.resource);
+          }}
           defaultView="month"
           views={['month', 'week', 'day', 'agenda']}
           step={60}
@@ -55,12 +55,11 @@ export default function ContentCalendar({ posts }: { posts: Post[] }) {
         />
       </div>
       
-      {/* Removed AnalyticsModal usage */}
-      {/* <AnalyticsModal
+      <AnalyticsModal
         post={selectedPost}
         isOpen={!!selectedPost}
         onOpenChange={(isOpen) => { if (!isOpen) { setSelectedPost(null); }}}
-      /> */}
+      />
     </>
   );
 }

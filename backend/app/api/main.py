@@ -25,6 +25,8 @@ from backend.app.domain.entities import UserProfile
 from backend.app.adapters.llm_service import PerplexityAdapter
 
 
+load_dotenv()
+
 # This is a new function that will run once when the app starts
 def on_startup():
     print("Application is starting up...")
@@ -40,7 +42,7 @@ app = FastAPI(
 # This allows our frontend (running on localhost:3000) to make requests to our backend.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:3001,https://influence-ten.vercel.app").split(","),
+    allow_origins=["http://localhost:3000", "http://localhost:3001", "https://influence-ten.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -53,7 +55,7 @@ class PostUpdate(BaseModel):
 # --- LinkedIn OAuth Configuration ---
 LINKEDIN_CLIENT_ID = os.getenv("LINKEDIN_CLIENT_ID")
 LINKEDIN_CLIENT_SECRET = os.getenv("LINKEDIN_CLIENT_SECRET")
-LINKEDIN_REDIRECT_URI = os.getenv("LINKEDIN_REDIRECT_URI", "http://localhost:8000/api/v1/auth/linkedin/callback")
+LINKEDIN_REDIRECT_URI = "http://localhost:8000/api/v1/auth/linkedin/callback"
 LINKEDIN_SCOPE = "profile openid email"
 
 linkedin_adapter = LinkedInAPIAdapter()
@@ -140,7 +142,7 @@ async def linkedin_callback(request: Request):
     
     # --- THIS IS THE UPDATED PART ---
     # Define the destination URL for our frontend dashboard
-    frontend_dashboard_url = os.getenv("FRONTEND_DASHBOARD_URL", "http://localhost:3000/dashboard")
+    frontend_dashboard_url = "http://localhost:3000/dashboard"
     
     # Instead of returning JSON, redirect the user back to the frontend,
     # passing the user_id as a query parameter.
